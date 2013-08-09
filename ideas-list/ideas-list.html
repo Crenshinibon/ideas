@@ -1,7 +1,7 @@
 <template name="ideas">
     <div class="container-fluid">
         <div class="row-fluid">
-            <h1>Ideas</h1>
+            {{> ideasListHeader}}
         </div>
         <div class="row-fluid">
             {{> ideasListControl}}
@@ -10,6 +10,14 @@
             {{> ideasList}}
         </div>
     </div>
+</template>
+
+<template name="ideasListHeader">
+    <h1 class="span6">Ideas
+        {{#if currentUser}}
+        <button class="btn new-button" type="button">New</button>
+        {{/if}}
+    </h1>
 </template>
 
 <template name="ideasListControl">
@@ -22,7 +30,7 @@
 </template>
 
 <template name="ideasListSort">
-    <form class="form-inline sortForm">
+    <form class="form-inline sort-form">
     <select class="input-medium">
         <option selected>Date changed</option>
         <option>Search Score</option>
