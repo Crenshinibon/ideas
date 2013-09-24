@@ -1,8 +1,20 @@
 <template name="spometSearch">
-    <form class="form-search">
+    <form>
         <div class="input-append">
-        <input type="text" class="{{#if fieldSizeClass}}{{fieldSizeClass}}{{else}}input-large{{/if}} search-query spomet-search-field" autocomplete="off" data-provide="typeahead" value="{{latestPhrase}}">
-        <button type="submit" class="btn">{{#if buttonText}}{{buttonText}}{{else}}Search{{/if}}</button>
+            <input type="text" class="{{#if fieldSizeClass}} {{fieldSizeClass}} {{else}} input-medium {{/if}} {{#if searchInProgress}}search-in-progress{{/if}} spomet-search-field" autocomplete="off" data-provide="typeahead" value="{{latestPhrase}}">
+            <div class="btn-group">
+                {{#if searching}}
+                <button type="button" class="btn spomet-reset-search"><span class="icon-remove"></span></button>
+                {{/if}}
+                {{#unless searchInProgress}}
+                    <button type="submit" class="btn">
+                        {{#if buttonText}}
+                            {{buttonText}}
+                        {{else}}Search
+                        {{/if}}
+                    </button>
+                {{/unless}}
+            </div>
         </div>
     </form>
 </template>

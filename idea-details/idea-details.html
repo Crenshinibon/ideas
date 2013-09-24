@@ -1,16 +1,43 @@
 <template name="idea">
-    {{#if collapsed}}
-    {{> ideaCollapsed}}
-    {{else}}
-    {{> ideaDetails}}
-    {{/if}}
+    <div class="container-fluid well idea">
+        {{#if expanded}}
+        {{> ideaDetails}}
+        {{else}}
+        {{> ideaHeader}}
+        {{/if}}
+    </div>
 </template>
 
-<template name="ideaCollapsed">
-    <div>Some Idea</div>
+<template name="ideaHeader">
+    <div class="row-fluid">
+        <span class="span6">{{title}}</span>
+        <span class="span3">{{prettyChangedDate}}</span>
+        <span class="span3 text-right">{{> ideaVotes}}</span>
+    </div>
+</template>
+
+<template name="ideaVotes">
+    {{#if userIsNotAuthor}}
+    <button class="btn btn-small vote-idea" {{#if userHasVoted}}disabled{{/if}}>
+        <span class="icon-star"></span>
+    </button>
+    {{/if}}
+    <span class="badge badge-info">{{numberOfVotes}}</span>
 </template>
 
 <template name="ideaDetails">
-    <div>Some Idea</div>
-    <div>details</div>
+    {{> ideaHeader}}
+    <div class="row-fluid">
+        {{#if userIsAuthor}}
+        <form>
+            <textarea id="desc_@_id" rows= "6" class="span12 idea-description">{{transientDescription}}</textarea>
+            {{#if descUpdated}}
+            <button type="button" class="btn cancel-button">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+            {{/if}}
+        </form>
+        {{else}}
+        {{description}}
+        {{/if}}
+    </div>
 </template>
