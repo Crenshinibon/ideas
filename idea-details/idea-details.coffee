@@ -50,8 +50,13 @@ if Meteor.isClient
             e.preventDefault()
             newDesc = Session.get('changedIdeas')[@_id]
             rev = @rev + 1
-            Ideas.update {_id: @_id}, {$set: {description: newDesc, version: rev}}
-            Spomet.add new Spomet.Findable newDesc, 'description', @_id, rev
+            Ideas.update {_id: @_id}, 
+                $set: 
+                    description: newDesc
+                    version: rev
+                    updated: new Date
+            
+            Spomet.update new Spomet.Findable newDesc, 'description', @_id, 'idea', rev
         'click button.cancel-button': (e) ->
             changedIdeas = Session.get 'changedIdeas'
             changedIdeas[@_id] = @description

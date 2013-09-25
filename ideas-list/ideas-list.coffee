@@ -5,8 +5,18 @@ if Meteor.isClient
     
     Meteor.subscribe 'ideas'
     
+    Template.newIdeasList.ideas = () ->
+        NewIdeas.find()
+    
     Template.ideasList.ideas = () ->
         Ideas.find()
+    
+    Template.ideasListHeader.events
+        'click button.new-button': (e) ->
+            NewIdeas.insert 
+                title: 'New Idea'
+                description: ''
+                
 
 if Meteor.isServer
     Meteor.publish 'ideas', () ->

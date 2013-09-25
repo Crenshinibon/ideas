@@ -1,5 +1,8 @@
 @Ideas = new Meteor.Collection 'ideas'
 
+if Meteor.isClient
+    @NewIdeas = new Meteor.Collection null
+
 #load some test data on server start up, if there is none
 if Meteor.isServer
     Meteor.startup () ->
@@ -30,8 +33,8 @@ if Meteor.isServer
                 version: 1
                 votes: []
             id1 = Ideas.insert idea1
-            Spomet.add new Spomet.Findable idea1.description, 'description', id1
-            Spomet.add new Spomet.Findable idea1.title, 'title', id1
+            Spomet.add new Spomet.Findable idea1.description, 'description', id1, 'idea', 1
+            Spomet.add new Spomet.Findable idea1.title, 'title', id1, 'idea', 1
             
             idea2 =
                 user: 'test1'
@@ -41,8 +44,8 @@ if Meteor.isServer
                 version: 1
                 votes: []
             id2 = Ideas.insert idea2
-            Spomet.add new Spomet.Findable idea2.description, 'description', id2
-            Spomet.add new Spomet.Findable idea2.title, 'title', id2
+            Spomet.add new Spomet.Findable idea2.description, 'description', id2, 'idea', 1
+            Spomet.add new Spomet.Findable idea2.title, 'title', id2, 'idea', 1
             
             idea3 =
                 user: 'test2'
@@ -52,7 +55,7 @@ if Meteor.isServer
                 version: 1
                 votes: []
             id3 = Ideas.insert idea3
-            Spomet.add new Spomet.Findable idea3.description, 'description', id3
-            Spomet.add new Spomet.Findable idea3.title, 'title', id3
+            Spomet.add new Spomet.Findable idea3.description, 'description', id3, 'idea', 1
+            Spomet.add new Spomet.Findable idea3.title, 'title', id3, 'idea', 1
             
             
