@@ -8,6 +8,12 @@ if Meteor.isClient
     Template.newIdeasList.ideas = () ->
         NewIdeas.find()
     
+    Template.ideasList.searching = () ->
+        Spomet.defaultSearch.getCurrentPhrase()?
+    
+    Template.ideasList.results = () ->
+        Spomet.defaultSearch.results()
+    
     Template.ideasList.ideas = () ->
         Ideas.find()
     

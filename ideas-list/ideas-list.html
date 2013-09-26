@@ -54,7 +54,13 @@
 </template>
 
 <template name="ideasList">
-    {{#each ideas}}
-    {{> idea}}
-    {{/each}}
+    {{#if searching}}
+        {{#each results}}
+            {{> result}}
+        {{/each}}
+    {{else}}
+        {{#each ideas}}
+            {{> idea}}
+        {{/each}}
+    {{/if}}
 </template>
