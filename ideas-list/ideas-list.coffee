@@ -62,7 +62,7 @@ if Meteor.isClient
             {name: 'Title', selected: if sortedBy is 'title' then 'selected'}]
             
     Template.ideasListSort.events
-        'change select': (e) ->
+        'change select.sort-field': (e) ->
             sorted = $(e.target).val()
             Session.set 'sort-by', sortKeys[sorted]
             updateList()
