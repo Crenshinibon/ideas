@@ -49,6 +49,8 @@ if Meteor.isClient
             changedIdeas = Session.get 'changedIdeas'
             changedIdeas[@_id] = newValue
             Session.set 'changedIdeas', changedIdeas
+            
+            simSearch.setExcludes [@_id]
             simSearch.find newValue
         'submit form': (e) ->
             e.preventDefault()
