@@ -21,3 +21,9 @@ if Meteor.isClient
                 Spomet.add new Spomet.Findable description, 'description', id, 'idea', 1
                 
                 NewIdeas.remove {_id: @._id}
+        'keyup input.idea-title': (e) ->
+            phrase = $(e.target).val()
+            simSearch.find phrase
+        'keyup textarea.idea-description': (e) ->
+            phrase = $(e.target).val()
+            simSearch.find phrase

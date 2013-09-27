@@ -6,6 +6,9 @@ if Meteor.isClient
     Template.idea.events
         'click div.idea': (e) ->
             Session.set 'selectedIdea', @_id
+            phrase = @title + ' ' + @description
+            simSearch.setExcludes [@_id]
+            simSearch.find phrase
             
     Template.ideaHeader.prettyChangedDate = () ->
         moment(@changed).fromNow()
@@ -46,6 +49,7 @@ if Meteor.isClient
             changedIdeas = Session.get 'changedIdeas'
             changedIdeas[@_id] = newValue
             Session.set 'changedIdeas', changedIdeas
+            simSearch.find newValue
         'submit form': (e) ->
             e.preventDefault()
             newDesc = Session.get('changedIdeas')[@_id]

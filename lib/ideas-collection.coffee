@@ -7,16 +7,18 @@ if Meteor.isClient
     @reSubscribe = (sort) ->
         if handle?
             handle.stop()
+            
         handle = Meteor.subscribe 'ideas', sort
     
     reSubscribe()
 
 if Meteor.isServer
+    
     Meteor.publish 'ideas', (sort) ->
         unless sort?
             sort = {}
             sort.changed = -1
-        Ideas.find {}, {sort: sort, limit: 10}
+        Ideas.find {}, {sort: sort, limit: 20}
     
     
     if Meteor.users.find({username: 'test1'}).count() is 0
