@@ -40,6 +40,7 @@ if Meteor.isClient
         Score: 'score'
         Date: 'changed'
         Title: 'title'
+        Votes: 'votesCount'
         
     Template.ideasListSort.sortDesc = () ->
         if (Session.get 'sort-dir') is -1
@@ -59,6 +60,7 @@ if Meteor.isClient
                 sortedBy = 'changed'
                 Session.set 'sort-by', sortedBy
             [{name: 'Date', selected: if sortedBy is 'changed' then 'selected'}
+            {name: 'Votes', selected: if sortedBy is 'votesCount' then 'selected'}
             {name: 'Title', selected: if sortedBy is 'title' then 'selected'}]
             
     Template.ideasListSort.events

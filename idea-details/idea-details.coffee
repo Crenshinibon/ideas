@@ -14,7 +14,7 @@ if Meteor.isClient
         moment(@changed).fromNow()
     
     Template.ideaVotes.numberOfVotes = () ->
-        @votes.length
+        @votesCount
         
     Template.ideaVotes.userIsNotAuthor = () ->
         Meteor.user()? and Meteor.user().username isnt @user
@@ -25,7 +25,9 @@ if Meteor.isClient
     Template.ideaVotes.events
         'click button.vote-idea': (e) ->
             e.stopPropagation()
-            Ideas.update {_id: @_id}, {$push: {votes: Meteor.user().username}}
+            Ideas.update {_id: @_id}, 
+                $inc: {votesCount: 1}
+                $push: {votes: Meteor.user().username}
     
     Template.ideaDetails.userIsAuthor = () ->
         Meteor.user()? and Meteor.user().username is @user

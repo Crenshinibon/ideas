@@ -39,6 +39,7 @@ if Meteor.isServer
             changed: new Date((new Date()).getTime() - 1*24*60*60*1000)
             version: 1
             votes: []
+            votesCount: 0
         id1 = Ideas.insert idea1
         Spomet.add new Spomet.Findable idea1.description, 'description', id1, 'idea', 1
         Spomet.add new Spomet.Findable idea1.title, 'title', id1, 'idea', 1
@@ -50,6 +51,7 @@ if Meteor.isServer
             changed: new Date(new Date((new Date()).getTime() - 2*24*60*60*1000))
             version: 1
             votes: []
+            votesCount: 0
         id2 = Ideas.insert idea2
         Spomet.add new Spomet.Findable idea2.description, 'description', id2, 'idea', 1
         Spomet.add new Spomet.Findable idea2.title, 'title', id2, 'idea', 1
@@ -61,6 +63,7 @@ if Meteor.isServer
             changed: new Date((new Date()).getTime() - 5*24*60*60*1000)
             version: 1
             votes: []
+            votesCount: 0
         id3 = Ideas.insert idea3
         Spomet.add new Spomet.Findable idea3.description, 'description', id3, 'idea', 1
         Spomet.add new Spomet.Findable idea3.title, 'title', id3, 'idea', 1

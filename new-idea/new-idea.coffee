@@ -16,6 +16,7 @@ if Meteor.isClient
                     changed: new Date
                     version: 1
                     votes: []
+                    votesCount: 0
                 
                 Spomet.add new Spomet.Findable title, 'title', id, 'idea', 1
                 Spomet.add new Spomet.Findable description, 'description', id, 'idea', 1
