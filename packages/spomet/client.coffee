@@ -41,14 +41,15 @@ class Spomet.Search
     reSubscribe: () =>
         if @subHandle
             @subHandle.stop()
-        search = @
         
+        search = @
         Deps.autorun () ->
-            search.subHandle = Meteor.subscribe 'search-results', 
-                search.get 'current-phrase', 
-                search.get 'search-sort',
-                search.get 'search-offset',
-                search.get 'search-limit'
+            opts = 
+                phrase: search.get 'current-phrase'
+                sort: search.get 'search-sort'
+                offset: search.get 'search-offset'
+                limit: search.get 'search-limit'
+            search.subHandle = Meteor.subscribe 'search-results', opts
     
     setCurrentPhrase: (phrase) =>
         @set 'current-phrase', phrase
@@ -58,6 +59,11 @@ class Spomet.Search
         @get 'current-phrase'
     
     setSort: (sort) =>
+        #be tolerant and allow {field: -1}
+        unless sort?.field? and sort?.direction?
+            sort.field = _.keys(sort)[0]
+            sort.direction = sort[sort.field]
+        
         @set 'search-sort', sort
         @reSubscribe()
         
@@ -103,22 +109,36 @@ class Spomet.Search
         @reSubscribe()
     
     createIntermediaryResults: (phrase) =>
-        words = phrase.split ' '
-        cur = Spomet.CommonTerms.find {token: {$in: words}} 
-        cur.forEach (e) ->
-            e.documents.forEach (d) ->
-                doc = Spomet.Documents.collection.findOne {docId: d.docId}
-                res = 
-                    phraseHash: Spomet.phraseHash phrase
-                    score: 0
-                    type: doc.findable.type
-                    base: doc.findable.base
-                    version: doc.findable.version
-                    subDocs: {}
-                    queried: new Date()
-                    interim: true
-                Spomet.Searches.insert res
-
+        phraseHash = Spomet.phraseHash phrase
+        search = Spomet.Searches.find {phraseHash: phraseHash} 
+        if search.count() is 0
+            
+            docs = {}
+            seen = {}
+            
+            words = phrase.split ' '
+            cursor = Spomet.CommonTerms.find {token: {$in: words}} 
+            
+            cursor.forEach (e) ->
+                e.documents.forEach (d) ->
+                    doc = docs[d.docId]
+                    unless doc?
+                        doc = Spomet.Documents.collection.findOne {docId: d.docId}
+                        docs[d.docId] = doc
+                        
+                    unless seen[doc.findable.base]?
+                        seen[doc.findable.base] = true
+                        res = 
+                            phraseHash: phraseHash 
+                            score: 0
+                            type: doc.findable.type
+                            base: doc.findable.base
+                            version: doc.findable.version
+                            subDocs: {}
+                            queried: new Date()
+                            interim: true
+                        Spomet.Searches.insert res
+            
     results: () =>
         phrase = @getCurrentPhrase()
         if phrase?

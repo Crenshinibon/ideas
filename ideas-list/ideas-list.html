@@ -41,14 +41,13 @@
 <template name="ideasListSort">
     <form class="form-inline sort-form">
     <select class="input-medium">
-        <option selected>Date changed</option>
-        <option>Search Score</option>
-        <option>Title</option>
-        <option>Rating</option>
+        {{#each options}}
+        <option name="{{sortKey}}" {{selected}}>{{name}}</option>
+        {{/each}}
     </select>
-    <button type="button" class="btn btn-info btn-small sort-direction">
-        <span class="icon-arrow-up"></span>
-        <span class="icon-arrow-down icon-white"></span>
+    <button type="submit" class="btn btn-info btn-small sort-direction">
+        <span class="icon-arrow-up {{sortAsc}}"></span>
+        <span class="icon-arrow-down {{sortDesc}}"></span>
     </button>
     </form>
 </template>

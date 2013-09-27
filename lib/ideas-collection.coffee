@@ -2,8 +2,23 @@
 
 if Meteor.isClient
     @NewIdeas = new Meteor.Collection null
+    
+    handle = null
+    @reSubscribe = (sort) ->
+        if handle?
+            handle.stop()
+        handle = Meteor.subscribe 'ideas', sort
+    
+    reSubscribe()
 
 if Meteor.isServer
+    Meteor.publish 'ideas', (sort) ->
+        unless sort?
+            sort = {}
+            sort.changed = -1
+        Ideas.find {}, {sort: sort, limit: 10}
+    
+    
     if Meteor.users.find({username: 'test1'}).count() is 0
         Accounts.createUser
             username: 'test1'

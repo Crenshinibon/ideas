@@ -27,10 +27,13 @@ updateSearchDoc = (current, phraseHash, doc, hits, score) ->
         docId: doc.docId
         path: doc.findable.path
         hits: hits
+        score: score
+        
+    scoreSum = _.values(subDocs).reduce ((s, e) -> s + e.score), 0
     
     Spomet.Searches.update {_id: current._id}, 
         $set: 
-            score: score
+            score: scoreSum
             subDocs: subDocs
             interim: false
     
@@ -38,6 +41,7 @@ Spomet.find = (phrase) ->
     phraseHash = Spomet.phraseHash phrase
     cur = Spomet.Searches.find {phraseHash: phraseHash, interim: false}
     unless cur.count() is 0
+        Spomet.Searches.remove {phraseHash: phraseHash, interim: true}
         {phrase: phrase, hash: phraseHash, cached: true}
     else
         docs = {}
@@ -127,7 +131,7 @@ Meteor.publish 'common-terms', () ->
         limit: Spomet.options.keywordsCount
             
     
-Meteor.publish 'search-results', (phrase, sort, offset, limit) ->
-    if phrase?
-        [selector, opts] = Spomet.buildSearchQuery phrase, sort, offset, limit
-        Spomet.Searches.find selector, opts
+Meteor.publish 'search-results', (opts) ->
+    if opts?.phrase?
+        [selector, queryOpts] = Spomet.buildSearchQuery opts.phrase, opts.sort, opts.offset, opts.limit
+        Spomet.Searches.find selector, queryOpts
