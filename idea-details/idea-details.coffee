@@ -12,9 +12,6 @@ if Meteor.isClient
             
     Template.ideaHeader.prettyChangedDate = () ->
         moment(@changed).fromNow()
-    
-    Template.ideaVotes.numberOfVotes = () ->
-        @votesCount
         
     Template.ideaVotes.userIsNotAuthor = () ->
         Meteor.user()? and Meteor.user().username isnt @user
