@@ -44,6 +44,8 @@ if Meteor.isClient
         
     Template.ideaDetails.events
         'keyup textarea.idea-description': (e) ->
+            e.stopPropagation()
+            
             newValue = e.target.value
             changedIdeas = Session.get 'changedIdeas'
             changedIdeas[@_id] = newValue

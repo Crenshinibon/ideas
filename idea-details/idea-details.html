@@ -30,7 +30,7 @@
     <div class="row-fluid">
         {{#if userIsAuthor}}
         <form>
-            <textarea rows= "6" class="span12 idea-description">{{transientDescription}}</textarea>
+            <textarea id="{{_id}}" rows= "6" class="span12 idea-description">{{transientDescription}}</textarea>
             {{#if descUpdated}}
             <button type="button" class="btn cancel-button">Cancel</button>
             <button type="submit" class="btn btn-primary">Save</button>
