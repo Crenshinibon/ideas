@@ -15,6 +15,9 @@ if Meteor.isClient
         
     Template.ideaVotes.userIsNotAuthor = () ->
         Meteor.user()? and Meteor.user().username isnt @user
+        
+    Template.ideaVotes.userIsAuthor = () ->
+        Meteor.user()? and Meteor.user().username is @user
     
     Template.ideaVotes.userHasVoted = () ->
         Meteor.user()? and _.any @votes, (u) -> Meteor.user().username is u
@@ -25,6 +28,11 @@ if Meteor.isClient
             Ideas.update {_id: @_id}, 
                 $inc: {votesCount: 1}
                 $push: {votes: Meteor.user().username}
+                
+        'click button.remove-idea': (e) ->
+            e.stopPropagation()
+            Ideas.remove {_id: @_id}
+            Spomet.removeBase @_id
     
     Template.ideaDetails.userIsAuthor = () ->
         Meteor.user()? and Meteor.user().username is @user
@@ -56,14 +64,14 @@ if Meteor.isClient
         'submit form': (e) ->
             e.preventDefault()
             newDesc = Session.get('changedIdeas')[@_id]
-            rev = @rev + 1
+            newVersion = @version + 1
             Ideas.update {_id: @_id}, 
                 $set: 
                     description: newDesc
-                    version: rev
+                    version: newVersion
                     updated: new Date
             
-            Spomet.update new Spomet.Findable newDesc, 'description', @_id, 'idea', rev
+            Spomet.update new Spomet.Findable newDesc, 'description', @_id, 'idea', newVersion
         'click button.cancel-button': (e) ->
             changedIdeas = Session.get 'changedIdeas'
             changedIdeas[@_id] = @description

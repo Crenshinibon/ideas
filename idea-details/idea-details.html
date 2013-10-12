@@ -22,6 +22,9 @@
         <span class="icon-star"></span>
     </button>
     {{/if}}
+    {{#if userIsAuthor}}
+    <button class="btn btn-danger remove-idea"><span class="icon-remove"></span></button>
+    {{/if}}
     <span class="badge badge-info">{{votesCount}}</span>
 </template>
 
