@@ -14,12 +14,19 @@ if Meteor.isClient
                     title: title
                     description: description 
                     changed: new Date
-                    version: 1
                     votes: []
                     votesCount: 0
                 
-                Spomet.add new Spomet.Findable title, 'title', id, 'idea', 1
-                Spomet.add new Spomet.Findable description, 'description', id, 'idea', 1
+                Spomet.add
+                    text: title
+                    path: 'title'
+                    base: id
+                    type: 'idea'
+                Spomet.add 
+                    text: description
+                    path: 'description'
+                    base: id
+                    type: 'idea'
                 
                 NewIdeas.remove {_id: @._id}
         'keyup input.idea-title': (e) ->

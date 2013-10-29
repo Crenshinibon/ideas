@@ -1,9 +1,9 @@
 createSearchDoc = (phraseHash, doc) ->
     current = Spomet.Searches.findOne
         phraseHash: phraseHash
-        base: doc.findable.base
-        type: doc.findable.type
-        version: doc.findable.version
+        base: doc.base
+        type: doc.type
+        version: doc.version
     
     if current?
         current
@@ -11,9 +11,9 @@ createSearchDoc = (phraseHash, doc) ->
         res = 
             phraseHash: phraseHash
             score: 0
-            type: doc.findable.type
-            base: doc.findable.base
-            version: doc.findable.version
+            type: doc.type
+            base: doc.base
+            version: doc.version
             subDocs: {}
             queried: new Date()
             interim: false
@@ -23,9 +23,9 @@ createSearchDoc = (phraseHash, doc) ->
 updateSearchDoc = (current, phraseHash, doc, hits, score) ->
     subDocs = current.subDocs
     
-    subDocs[doc.findable.path] =
+    subDocs[doc.path] =
         docId: doc.docId
-        path: doc.findable.path
+        path: doc.path
         hits: hits
         score: score
         
@@ -65,11 +65,27 @@ cleanupSearches = () ->
     Spomet.Searches._ensureIndex {phraseHash: 1}
     Spomet.Searches._ensureIndex {phraseHash: 1, base: 1, type: 1, version: 1}
     
-Spomet.add = (findable, callback) ->
+Spomet.add = (docSpec) ->
     cleanupSearches()
-    Spomet.Index.add findable, callback
- 
- 
+    Spomet.Index.add docSpec
+    
+Spomet.replace = (docSpec, refVersion) ->
+    cleanupSearches()
+    Spomet.Index.add docSpec
+    
+    docSpecRem = 
+        type: docSpec.type
+        base: docSpec.base
+        path: docSpec.path
+    if refVersion?
+        docSpecRem.version = refVersion
+        Spome.remove docSpecRem
+    else
+        docSpecRem.version = docSpec.version - 1
+        Spomet.remove docSpecRem
+    docSpec
+
+
 removeTokens = (indexTokens) ->
     result = {}
     indexTokens.forEach (e) ->
@@ -79,22 +95,15 @@ removeTokens = (indexTokens) ->
             indexName: e.indexName
     _.values result
                
-Spomet.remove = (docId) ->
+Spomet.remove = (docSpec) ->
     cleanupSearches()
-    doc = Spomet.Documents.collection.findOne {docId: docId}
-    if doc?
-        removeTokens(doc.indexTokens).forEach (rToken) ->
-            Spomet.Index.remove docId, rToken.indexName, rToken.token
-        
-        Spomet.Documents.collection.remove {_id: doc._id}
-
-Spomet.removeBase = (baseId) ->
-    cleanupSearches()
-    c = Spomet.Documents.collection.find {'findable.base': baseId}
-    c.forEach (e) ->
+    documents = Spomet.Documents.query docSpec
+    
+    documents.forEach (e) ->
         removeTokens(e.indexTokens).forEach (rToken) ->
             Spomet.Index.remove e.docId, rToken.indexName, rToken.token
         Spomet.Documents.collection.remove {_id: e._id}
+
 
 Spomet.reset = () ->
     cleanupSearches()
@@ -106,30 +115,26 @@ Meteor.methods
         if indexNames?
             indexes = Spomet.options.indexes.filter (e) ->
                 e.name in indexNames
-            
         Spomet.find phrase, indexes
-    spometAdd: (findable) ->
-        Spomet.add findable
-    spometRemove: (findable) ->
-        if findable?.docId?
-            Spomet.remove findable.docId
-        else if findable?
-            Spomet.remove findable
-    spometRemoveBase: (baseId) ->
-        Spomet.removeBase baseId
-    spometUpdate: (findable) ->
-        Spomet.remove findable.previousVersionDocId
-        Spomet.add findable
-
+    
+    spometAdd: (docSpec) ->
+        Spomet.add docSpec
+    
+    spometRemove: (docSpec) ->
+        Spomet.remove docSpec
+    
+    spometReplace: (docSpec, refVersion) ->
+        Spomet.replace docSpec, refVersion
+        
 Meteor.publish 'documents', () ->
     Spomet.Documents.collection.find {},
         fields:
             _id: 1
             docId: 1
-            'findable.type': 1
-            'findable.base': 1
-            'findable.path': 1
-            'findable.version': 1
+            'type': 1
+            'base': 1
+            'path': 1
+            'version': 1
 
 #should be extended
 stopWords = ['there','not','this','that','them','then','and','the','any','all','other','und','ich','wir','sie','als']

@@ -1,7 +1,7 @@
-indexTokens = (findable, tokens, collection) ->
+indexTokens = (docId, tokens, collection) ->
     tokens.forEach (token) ->
         doc = 
-            docId: findable.docId
+            docId: docId
             pos: token.pos
         
         t = collection.findOne {token: token.token}
@@ -17,13 +17,6 @@ indexTokens = (findable, tokens, collection) ->
                 tlength: token.tlength, 
                 documentsCount: 1, 
                 documents: [doc]
-
-tokenizeWithIndex = (ind, text) ->
-    tokenizer = new ind.Tokenizer
-    text.split('').forEach (c, i) ->
-        tokenizer.parseCharacter c, i
-    tokenizer.finalize()
-    tokenizer
 
 documentsCountWithToken = (collection, token) ->
     collection.findOne({token: token})?.documentsCount
@@ -56,40 +49,44 @@ rate = (docId, tokenCounts) ->
             data.documentsCountWithToken,
             data.indexBoost
     score
-    
-Index.add = (findable, callback) ->
+
+
+Index.add = (docSpec) ->
+    if docSpec.base? and docSpec.text?
+        unless docSpec.type? then docSpec.type = 'default'
+        unless docSpec.path? then docSpec.path = '/'
+        docSpec.version = Documents.nextVersion docSpec
         
-    unless Documents.exists findable
         #init indexer for each index
         tokenizers = Spomet.options.indexes.map (i) ->
             new i.Tokenizer
-            
+        
         #normalize and tokenize over all indexes in one go
-        findable.text.split('').forEach (c, pos) ->
+        docSpec.text.split('').forEach (c, pos) ->
             tokenizers.forEach (t) ->
                 t.parseCharacter c, pos
-        
+    
+        docId = Spomet._docId docSpec
         tokenizers.forEach (t) ->
             t.finalize()
-            indexTokens findable, t.tokens, t.collection
-            
-        Documents.add findable, tokenizers.map((i) -> i.tokens).reduce (s, a) -> s.concat a
-        callback? findable.docId, 'Document added to all indexes'
-    else
-        callback? null, 'Document already added!'
-            
+            indexTokens docId, t.tokens, t.collection
+        
+        Documents.add docSpec, tokenizers.map((i) -> i.tokens).reduce (s, a) -> s.concat a
+    
+    docSpec
+    
+    
 Index.reset = () ->
     Documents.collection.remove {}
-    Documents.collection._ensureIndex {docId: 1}
     Spomet.options.indexes.forEach (index) ->
         index.collection.remove {}
-        index.collection._ensureIndex {token: 1}
             
 Index.setup = () ->
     Documents.collection._ensureIndex {docId: 1}
+    Documents.collection._ensureIndex {type: 1, base: 1, path: 1}
+    
     Spomet.options.indexes.forEach (index) ->
         index.collection._ensureIndex {token: 1}
-    
     
 Index.remove = (docId, indexName, remToken) ->
     ind = i for i in Spomet.options.indexes when i.name is indexName

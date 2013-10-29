@@ -2,17 +2,14 @@ Deps.autorun () ->
     Meteor.subscribe 'documents'
     Meteor.subscribe 'common-terms'
 
-Spomet.add = (findable) ->
-    Meteor.call 'spometAdd', findable, () ->
+Spomet.add = (docSpec) ->
+    Meteor.call 'spometAdd', docSpec, () ->
     
-Spomet.update = (findable) ->
-    Meteor.call 'spometUpdate', findable, () ->
+Spomet.replace = (docSpec, refVersion) ->
+    Meteor.call 'spometReplace', docSpec, refVersion, () ->
     
-Spomet.remove = (findable) ->
-    Meteor.call 'spometRemove', findable, () ->
-
-Spomet.removeBase = (baseId) ->
-    Meteor.call 'spometRemoveBase', baseId, () ->
+Spomet.remove = (docSpec) ->
+    Meteor.call 'spometRemove', docSpec, () ->
 
 class Spomet.Search
     
@@ -138,17 +135,17 @@ class Spomet.Search
                 e.documents.forEach (d) ->
                     doc = docs[d.docId]
                     unless doc?
-                        doc = Spomet.Documents.collection.findOne {docId: d.docId}
+                        doc = Spomet.Documents.get d.docId
                         docs[d.docId] = doc
                         
-                    unless seen[doc.findable.base]?
-                        seen[doc.findable.base] = true
+                    unless seen[doc.base]?
+                        seen[doc.base] = true
                         res = 
                             phraseHash: phraseHash 
                             score: 0
-                            type: doc.findable.type
-                            base: doc.findable.base
-                            version: doc.findable.version
+                            type: doc.type
+                            base: doc.base
+                            version: doc.version
                             subDocs: {}
                             queried: new Date()
                             interim: true

@@ -32,7 +32,7 @@ if Meteor.isClient
         'click button.remove-idea': (e) ->
             e.stopPropagation()
             Ideas.remove {_id: @_id}
-            Spomet.removeBase @_id
+            Spomet.remove {base: @_id}
     
     Template.ideaDetails.userIsAuthor = () ->
         Meteor.user()? and Meteor.user().username is @user
@@ -64,14 +64,16 @@ if Meteor.isClient
         'submit form': (e) ->
             e.preventDefault()
             newDesc = Session.get('changedIdeas')[@_id]
-            newVersion = @version + 1
             Ideas.update {_id: @_id}, 
                 $set: 
                     description: newDesc
-                    version: newVersion
                     updated: new Date
             
-            Spomet.update new Spomet.Findable newDesc, 'description', @_id, 'idea', newVersion
+            Spomet.replace 
+                text: newDesc
+                path: 'description'
+                base: @_id
+                type: 'idea'
         'click button.cancel-button': (e) ->
             changedIdeas = Session.get 'changedIdeas'
             changedIdeas[@_id] = @description

@@ -1,7 +1,7 @@
 Ideas
 =====
 
-Some example application for Ideation Management in Meteor, showcasing Spomet search. Check out the live demo [here](http://shiggy-ideas.meteor.com). And read about it's genesis [here](http://shiggyenterprises.wordpress.com/2013/09/28/developing-a-full-text-search-enabled-meteor-app/)
+Some example application for Ideation Management in Meteor, showcasing Spomet search. Check out the live demo [here](http://shiggy-ideas.meteor.com). And read about it's genesis [here](http://shiggyenterprises.wordpress.com/2013/09/28/developing-a-full-text-search-enabled-meteor-app/).
 
 Disclaimer
 ==========

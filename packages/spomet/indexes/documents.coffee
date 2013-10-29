@@ -16,20 +16,46 @@ calcMostCommonTermCount = (tokens) ->
     
 @Documents = 
     collection: new Meteor.Collection 'spomet-docs'
-    exists: (findable) ->
-        existing = @collection.findOne {docId: findable.docId}
+    exists: (docSpec) ->
+        existing = @collection.findOne docSpec
         existing?
+    
+    nextVersion: (docSpec) ->
+        if docSpec.type? and docSpec.base? and docSpec.path?
+            cur = @collection.find 
+                    type: docSpec.type
+                    base: docSpec.base
+                    path: docSpec.path
+                ,
+                    sort: {version: -1}
+                    limit: 1
+                    
+            res = cur.fetch()
+            if res.length is 1
+                res.version + 1
+            else
+                1
     
     get: (docId) ->
         @collection.findOne({docId: docId})
     
-    add: (findable, tokens) ->
+    query: (docSpec) ->
+        results = []
+        if docSpec?
+            results = Spomet.Documents.collection.find(docSpec).fetch()
+        results
+        
+    add: (docSpec, tokens) ->
         #expects as indexTokens {index: name, tokens: ['t1','t2']}
-        unless @exists findable
+        unless @exists docSpec
             @collection.insert 
-                docId: findable.docId
-                findable: findable
-                dlength: findable.text.length
+                docId: Spomet._docId docSpec
+                text: docSpec.text
+                type: docSpec.type
+                base: docSpec.base
+                path: docSpec.path
+                version: docSpec.version
+                dlength: docSpec.text.length
                 created: new Date()
                 indexTokens: tokens
                 mostCommonTermCount: calcMostCommonTermCount tokens

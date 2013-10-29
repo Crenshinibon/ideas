@@ -1,0 +1,9 @@
+{
+  "name": "spomet",
+  "description": "Full-text search package for Meteor",
+  "homepage": "https://github.com/Crenshinibon/spomet",
+  "author": "Dirk Porsche (http://shiggyenterprises.wordpress.com)",
+  "version": "0.3.0",
+  "git": "https://github.com/Crenshinibon/spomet.git",
+  "packages": {}
+}

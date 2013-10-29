@@ -14,6 +14,13 @@ Spomet.options =
 Spomet.phraseHash = (phrase) ->
     CryptoJS.MD5(phrase).toString()
 
+Spomet._docId = (docSpec) ->
+    unless docSpec.version? then docSpec.version = 1
+    unless docSpec.type? then docSpec.type = 'default'
+    unless docSpec.path? then docSpec.path = '/'
+    
+    docSpec.type + '-' + docSpec.base + '-' + docSpec.path + '-' + docSpec.version
+    
 Spomet.buildSearchQuery = (options) ->
     phraseHash = CryptoJS.MD5(options.phrase).toString()
     selector = {phraseHash: phraseHash}
@@ -39,12 +46,5 @@ Spomet.buildSearchQuery = (options) ->
     else
         qOpts.limit = Spomet.options.resultsCount
     [selector, qOpts]
-
-class Spomet.Findable
-    constructor: (@text, @path, @base, @type, @version) ->
-        unless version? then @version = 1
-        unless type? then @type = 'default'
-        @docId = @type + '-' + base + '-' + path + '-' + @version
-        @previousVersionDocId = @type + '-' + base + '-' + path + '-' + (@version - 1)
 
 @Index = {}
